@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense &amp; Budget Visualizer</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="light">
+
+    <!-- HEADER -->
+    <header class="app-header">
+      <h1 class="app-title">Budget Tracker</h1>
+      <!-- Optional Challenge 1: Dark/Light mode toggle -->
+      <button id="themeToggle" class="btn-icon" aria-label="Toggle dark/light mode">🌙</button>
+    </header>
+
+    <main class="container">
+
+      <!-- TOTAL BALANCE (Feature 10) -->
+      <section class="balance-card" aria-label="Balance summary">
+        <p class="balance-label">Total Balance</p>
+        <h2 class="balance-amount" id="totalBalance">$0.00</h2>
+        <div class="balance-details">
+          <div class="balance-item income">
+            <span class="balance-item-label">Income</span>
+            <span class="balance-item-value" id="totalIncome">$0.00</span>
+          </div>
+          <div class="divider-v"></div>
+          <div class="balance-item expense">
+            <span class="balance-item-label">Expenses</span>
+            <span class="balance-item-value" id="totalExpense">$0.00</span>
+          </div>
+        </div>
+        <!-- Optional Challenge 2: Budget limit warning -->
+        <div class="budget-warning hidden" id="budgetWarning">
+          ⚠️ You've exceeded your monthly budget limit!
+        </div>
+      </section>
+
+      <!-- BUDGET LIMIT SETTING (Optional Challenge 2) -->
+      <section class="card" aria-labelledby="budgetLimitHeading">
+        <h3 class="section-title" id="budgetLimitHeading">Monthly Budget Limit</h3>
+        <div class="row-gap">
+          <input
+            type="number"
+            id="budgetLimitInput"
+            class="input"
+            placeholder="e.g. 1000"
+            min="0"
+            aria-label="Set monthly budget limit"
+          />
+          <button id="setBudgetBtn" class="btn btn-secondary">Set</button>
+        </div>
+        <p class="hint" id="budgetLimitDisplay">No limit set.</p>
+      </section>
+
+      <!-- ADD TRANSACTION FORM (Feature 8) -->
+      <section class="card" aria-labelledby="addTxHeading">
+        <h3 class="section-title" id="addTxHeading">Add Transaction</h3>
+        <form id="transactionForm" novalidate>
+
+          <div class="form-group">
+            <label for="txName" class="form-label">Item Name <span class="required">*</span></label>
+            <input
+              type="text"
+              id="txName"
+              class="input"
+              placeholder="e.g. Grocery shopping"
+            />
+          </div>
+
+          <!-- Amount + Category: single column on mobile, 2 columns on tablet+ -->
+          <div class="form-two-col">
+            <div class="form-group">
+              <label for="txAmount" class="form-label">Amount ($) <span class="required">*</span></label>
+              <input
+                type="number"
+                id="txAmount"
+                class="input"
+                placeholder="0.00"
+                min="0.01"
+                step="0.01"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="txCategory" class="form-label">Category <span class="required">*</span></label>
+              <select id="txCategory" class="input select">
+                <!-- Default categories: Food, Transport, Fun. Custom ones added below -->
+                <option value="Food">🍔 Food</option>
+                <option value="Transport">🚗 Transport</option>
+                <option value="Fun">🎮 Fun</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Optional Challenge 1: Add custom category -->
+          <div class="form-group custom-cat-row">
+            <input
+              type="text"
+              id="customCatInput"
+              class="input"
+              placeholder="+ New category name"
+              aria-label="Add a custom category"
+            />
+            <button type="button" id="addCatBtn" class="btn btn-secondary">Add</button>
+          </div>
+
+          <!-- Type + Date: single column on mobile, 2 columns on tablet+ -->
+          <div class="form-two-col">
+            <div class="form-group">
+              <label for="txType" class="form-label">Type</label>
+              <select id="txType" class="input select">
+                <option value="expense">Expense</option>
+                <option value="income">Income</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="txDate" class="form-label">Date <span class="required">*</span></label>
+              <input type="date" id="txDate" class="input" />
+            </div>
+          </div>
+
+          <!-- Validation error message -->
+          <p class="form-error hidden" id="formError" role="alert"></p>
+
+          <button type="submit" class="btn btn-primary btn-full">+ Add Transaction</button>
+        </form>
+      </section>
+
+      <!-- FILTER BY MONTH + SORT (Optional Challenge 3: Monthly Summary + Sort) -->
+      <section class="card" aria-labelledby="filterSortHeading">
+        <h3 class="section-title visually-hidden" id="filterSortHeading">Filter &amp; Sort</h3>
+        <div class="controls-row">
+          <div class="form-group no-margin">
+            <label for="monthFilter" class="form-label">Month View</label>
+            <input type="month" id="monthFilter" class="input" aria-label="Filter by month" />
+          </div>
+          <button id="clearMonthBtn" class="btn btn-ghost">Show All</button>
+        </div>
+        <div class="sort-row">
+          <span class="form-label">Sort by:</span>
+          <button class="btn btn-ghost sort-btn active" data-sort="date">Date</button>
+          <button class="btn btn-ghost sort-btn" data-sort="amount">Amount</button>
+          <button class="btn btn-ghost sort-btn" data-sort="category">Category</button>
+        </div>
+      </section>
+
+      <!-- PIE CHART (Feature 11) -->
+      <section class="card" aria-labelledby="chartHeading">
+        <h3 class="section-title" id="chartHeading">Spending by Category</h3>
+        <div class="chart-wrapper">
+          <canvas id="spendingChart" role="img" aria-label="Pie chart of expenses by category"></canvas>
+        </div>
+        <p class="empty-msg hidden" id="chartEmpty">No expense data to chart yet.</p>
+      </section>
+
+      <!-- TRANSACTION LIST (Feature 9) -->
+      <section class="card" aria-labelledby="txListHeading">
+        <div class="list-header-row">
+          <h3 class="section-title" id="txListHeading">Transactions</h3>
+          <span class="tx-count" id="txCount">0 items</span>
+        </div>
+        <!-- scrollable list -->
+        <ul class="tx-list" id="txList" aria-live="polite" aria-label="Transaction history"></ul>
+        <p class="empty-msg hidden" id="txEmpty">No transactions yet. Add one above!</p>
+      </section>
+
+    </main>
+
+    <footer class="app-footer">
+      <p>Budget Tracker &copy; 2026 — data saved locally in your browser</p>
+    </footer>
+
+    <!-- Chart.js CDN — loaded before app.js so Chart is available at runtime -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
